@@ -29,8 +29,8 @@ node_modules
 # Debug log from npm
 npm-debug.log
 
+node_modules
 node_modules/
-.gitignore
 .elasticbeanstalk/
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
