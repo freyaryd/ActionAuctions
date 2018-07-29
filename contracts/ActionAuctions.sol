@@ -4,7 +4,7 @@ pragma solidity ^0.4.24;
 //import open safemath
 import "./safemath.sol";
 
-contract ActionAuction{
+contract ActionAuctions{
 
   enum AuctionStatus {Active, Inactive}
 
@@ -48,7 +48,7 @@ contract ActionAuction{
   }
 
   //creates an action auction
-  function ActionAution() public {
+  function ActionAuctions() public {
     auctioneer = msg.sender;
     //add the charity to mapping of approved charities
     charities["amf"] =  0xD70AEeB15F5E934aCA7c626eA86bFc0ca5717C2A;
@@ -100,7 +100,7 @@ contract ActionAuction{
     return true;
   }
 
-  // ends the auction 
+  // ends the auction
   function endAuction(uint _auctionId) public onlyLive(_auctionId) onlyAuctioneer(_auctionId) {
     Auction memory a = auctions[_auctionId];
     a.status = AuctionStatus.Inactive;
