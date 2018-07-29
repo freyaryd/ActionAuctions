@@ -7,6 +7,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var helmet = require('helmet');
 var sass = require('node-sass-middleware');
+var web3 = require('web3.js');
 
 var AWS = require('aws-sdk');
 var settings = require('./environment');
