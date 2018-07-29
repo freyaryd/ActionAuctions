@@ -30,15 +30,14 @@ contract ActionAuction{
     //count bids
     numBids = numsBids.add(1);
   }
+}
 
 //figure out how to send payments
-function sendPayment(address _charity, address _winner, uint _amount) private payable{
+function sendPayments(address _charity, address _winner, uint _amount) private payable{
   //calc payout
   uint payout = _amount / 2;
   //send money to _charity
   _charity.transfer(payout);
   //send money to _winner
   _winner.transfer(payout);
-}
-
 }

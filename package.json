@@ -32,6 +32,7 @@
     "request": "^2.87.0",
     "serve-favicon": "~2.4.5",
     "stripe": "^5.3.0",
+    "truffle-hdwallet-provider": "0.0.5",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
