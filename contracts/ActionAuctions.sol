@@ -1,7 +1,7 @@
 //Action auction contract organizing and running a single auction
 pragma solidity ^0.4.24;
 
-//import open zepellin, safemath, ownable
+//import open safemath
 import "./safemath.sol";
 
 contract ActionAuction{
@@ -25,6 +25,7 @@ contract ActionAuction{
 
   Auction[] public auctions;          // All auctions
 
+  //name of charity to eth address
   mapping(string => address) charities;
 
   address auctioneer;
@@ -32,24 +33,28 @@ contract ActionAuction{
   event AuctionCreated(uint auctionId, string title, address auctioneer);
   event AuctionEnded(uint auctionId, address winner, uint amtWon, uint topBid);
 
+  //Checks that sender is the auctioneer
   modifier onlyAuctioneer(uint AuctionId){
     Auction memory a = auctions[AuctionId];
     assert(a.auctioneer != msg.sender);
         _;
   }
 
+  //Checks that current auction is live
   modifier onlyLive(uint AuctionId){
     Auction memory a = auctions[AuctionId];
     assert(a.status != AuctionStatus.Active);
     _;
   }
 
+  //creates an action auction
   function ActionAution() public {
     auctioneer = msg.sender;
     //add the charity to mapping of approved charities
     charities["amf"] =  0xD70AEeB15F5E934aCA7c626eA86bFc0ca5717C2A;
   }
 
+  //adds an auction to the list of auctions, and publishes it
   function createAuction(string _title, string _charity) public returns (uint auctionId) {
     // Make sure that the charity is correct
     require(charities[_charity] != 0, "Charity name is not valid");
@@ -72,6 +77,7 @@ contract ActionAuction{
     return auctionId;
   }
 
+  //allows users to place bid
   function placeBid(uint _auctionId) payable onlyLive(_auctionId) public returns (bool success) {
     Auction memory a = auctions[_auctionId];
     address newBid = msg.sender;
@@ -94,6 +100,7 @@ contract ActionAuction{
     return true;
   }
 
+  // ends the auction 
   function endAuction(uint _auctionId) public onlyLive(_auctionId) onlyAuctioneer(_auctionId) {
     Auction memory a = auctions[_auctionId];
     a.status = AuctionStatus.Inactive;
@@ -114,7 +121,7 @@ contract ActionAuction{
     //send money to _winner
     a.topBidder.transfer(payout);
   }
-  
+
   //Doesn't allow ether randomly being sent to you
   function() public {
     revert();
