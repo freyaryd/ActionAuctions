@@ -9,8 +9,8 @@
 ## Setup
 
 ```
-$ git clone https://github.com/theAlexPatin/CharityLabs.git
-$ cd CharityLabs
+$ git clone https://github.com/freyaryd/ActionAuctions.git
+$ cd ActionAuctions
 $ npm install
 ```
 
@@ -19,20 +19,13 @@ $ npm install
 $ npm start
 ```
 
-## Deploying
-```
-$ eb deploy
-```
-
 ## Testing
 
-When entering credit card info, use 4000 0000 0000 0077 with any exp date, cvv, zip 
+We need to implement cardconnect, they haven' granted us an account yet :(
 
-When setting up Express Payment, use 
-
- - Routing number: 11000000
- - Account number: 000123456789
-
-### Resources:
+### Resources
 - [ElasticBeanstalk tutorial](http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create-deploy-python-django.html)
-- [Stripe API](https://stripe.com/docs/api/python)
+
+### Smart Contracts
+- Action Auction smart contract handles decentralized auctioning for charity.
+- We're looking for people to help us, as none of us have block chain experience.
