@@ -56,7 +56,7 @@ contract ActionAuctions is Ownable {
   }
 
   //adds an auction to the list of auctions, and publishes it
-  function createAuction(string _title, string _charity) public returns (uint) {
+  function createAuction(string _title, string _charity) external returns (uint) {
     // Make sure that the charity is correct
     require(charities[_charity] != 0, "Charity name is not valid");
 
@@ -96,7 +96,7 @@ contract ActionAuctions is Ownable {
   }
 
   // ends the auction
-  function endAuction(uint _auctionId) public onlyLive(_auctionId) onlyAuctioneer(_auctionId) {
+  function endAuction(uint _auctionId) external onlyLive(_auctionId) onlyAuctioneer(_auctionId) {
     Auction memory a = auctions[_auctionId];
     auctions[_auctionId].status = AuctionStatus.Inactive;
     //CHECK THIS
