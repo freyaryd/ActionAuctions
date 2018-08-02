@@ -21,8 +21,6 @@ contract ActionAuctions is Ownable {
     address topBidder;
     uint topBid;
     uint total;
-
-    uint uncollectedWinnings;
   }
 
   Auction[] public auctions;          // All auctions
@@ -34,6 +32,7 @@ contract ActionAuctions is Ownable {
 
   event AuctionCreated(uint auctionId, string title, address auctioneer);
   event AuctionEnded(uint auctionId, address winner, uint amtWon, uint topBid);
+  event BidPlaced(uint numBids);
 
   //Checks that sender is the auctioneer
   modifier onlyAuctioneer(uint AuctionId){
@@ -50,14 +49,14 @@ contract ActionAuctions is Ownable {
   }
 
   //creates an action auction
-  function ActionAuctions() public {
+  constructor() public {
     auctioneer = msg.sender;
     //add the charity to mapping of approved charities
     charities["amf"] =  0xD70AEeB15F5E934aCA7c626eA86bFc0ca5717C2A;
   }
 
   //adds an auction to the list of auctions, and publishes it
-  function createAuction(string _title, string _charity) public returns (uint auctionId) {
+  function createAuction(string _title, string _charity) public returns (uint) {
     // Make sure that the charity is correct
     require(charities[_charity] != 0, "Charity name is not valid");
 
@@ -65,8 +64,7 @@ contract ActionAuctions is Ownable {
 
     Auction memory a = Auction(msg.sender, charities[_charity],
                         _title, AuctionStatus.Active, 0, charities[_charity], 0,
-                         0, 0);
-
+                         0);
     auctions.push(a);
 
     emit AuctionCreated(auctionId, a.title, a.auctioneer);
@@ -75,15 +73,16 @@ contract ActionAuctions is Ownable {
   }
 
   //allows users to place bid
-  function placeBid(uint _auctionId) payable onlyLive(_auctionId) public returns (bool success) {
+  //questionable if you need to return anything...
+  function placeBid(uint _auctionId) payable onlyLive(_auctionId) external {
+    require(_auctionId < auctions.length, "Invalid Auction ID");
+
     Auction memory a = auctions[_auctionId];
     address newBid = msg.sender;
     uint amount = msg.value;
 
-    //update total, uncollected winnings
-    a.total = SafeMath.add(a.total, amount);
-    uint winnings = SafeMath.div(amount, 2);
-    a.uncollectedWinnings = SafeMath.add(a.uncollectedWinnings, winnings);
+    //update total
+    a.total = a.total.add(amount);
 
     //update top bid and top id
     if(amount > a.topBid){
@@ -92,31 +91,19 @@ contract ActionAuctions is Ownable {
     }
 
     //count bids
-    a.numBids = SafeMath.add(a.numBids, 1);
-
-    return true;
+    a.numBids = a.numBids.add(1);
+    emit BidPlaced(a.numBids);
   }
 
   // ends the auction
   function endAuction(uint _auctionId) public onlyLive(_auctionId) onlyAuctioneer(_auctionId) {
     Auction memory a = auctions[_auctionId];
-    a.status = AuctionStatus.Inactive;
-    emit AuctionEnded(_auctionId, a.topBidder, a.uncollectedWinnings, a.topBid);
-  }
-
-  //sends payment to charity when winner collects
-  function retrieveWinnings(uint _auctionId) public payable{
-    Auction memory a = auctions[_auctionId];
-    //require auction is over
-    require(a.status == AuctionStatus.Active, "Auction still live");
-
-    //set uncollectedWinnings to 0 to prevent receiving winnings mult. times
-    uint payout = a.uncollectedWinnings;
-    a.uncollectedWinnings = 0;
-    //send money to _charity
-    a.charity.transfer(payout);
-    //send money to _winner
-    a.topBidder.transfer(payout);
+    auctions[_auctionId].status = AuctionStatus.Inactive;
+    //CHECK THIS
+    //Currently, for odd totals money will be left over, but only 1 wei so who cares?
+    a.topBidder.transfer(a.total.div(2));
+    a.charity.transfer(a.total.div(2));
+    emit AuctionEnded(_auctionId, a.topBidder, a.total.div(2), a.topBid);
   }
 
   ///Allows Action Auctions to remove a charity from the list
