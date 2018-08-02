@@ -3,8 +3,9 @@ pragma solidity ^0.4.24;
 
 //import open safemath
 import "./safemath.sol";
+import "./ownable.sol"
 
-contract ActionAuctions{
+contract ActionAuctions is Ownable{
 
   enum AuctionStatus {Active, Inactive}
 
@@ -26,7 +27,7 @@ contract ActionAuctions{
   Auction[] public auctions;          // All auctions
 
   //name of charity to eth address
-  mapping(string => address) charities;
+  mapping(string => address) public charities;
 
   address auctioneer;
 
@@ -120,6 +121,17 @@ contract ActionAuctions{
     a.charity.transfer(payout);
     //send money to _winner
     a.topBidder.transfer(payout);
+  }
+
+  ///Allows Action Auctions to remove a charity from the list
+  ///of approved charities
+  function removeCharity(string _charity) external onlyOwner{
+    charities[_charity] = 0;
+  }
+
+  ///Allows Action Auctions to approve a charity
+  function addCharity(string _charity, address _address) external onlyOwner{
+    charities[_charity] = _address;
   }
 
   //Doesn't allow ether randomly being sent to you
