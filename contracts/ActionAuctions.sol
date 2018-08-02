@@ -36,14 +36,14 @@ contract ActionAuctions{
   //Checks that sender is the auctioneer
   modifier onlyAuctioneer(uint AuctionId){
     Auction memory a = auctions[AuctionId];
-    assert(a.auctioneer != msg.sender);
+    require(a.auctioneer == msg.sender);
         _;
   }
 
   //Checks that current auction is live
   modifier onlyLive(uint AuctionId){
     Auction memory a = auctions[AuctionId];
-    assert(a.status != AuctionStatus.Active);
+    require(a.status == AuctionStatus.Active);
     _;
   }
 
