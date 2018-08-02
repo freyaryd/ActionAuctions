@@ -3,9 +3,10 @@ pragma solidity ^0.4.24;
 
 //import open safemath
 import "./safemath.sol";
-import "./ownable.sol"
+import "./ownable.sol";
 
-contract ActionAuctions is Ownable{
+contract ActionAuctions is Ownable {
+  using SafeMath for uint;
 
   enum AuctionStatus {Active, Inactive}
 
@@ -60,18 +61,13 @@ contract ActionAuctions is Ownable{
     // Make sure that the charity is correct
     require(charities[_charity] != 0, "Charity name is not valid");
 
-    auctionId = auctions.length++;
-    Auction memory a = auctions[auctionId];
+    uint auctionId = auctions.length;
 
-    a.auctioneer = msg.sender;
-    a.charity = charities[_charity];
-    a.title = _title;
-    a.status = AuctionStatus.Active;
-    a.numBids = 0;
-    a.topBidder;
-    a.topBid = 0;
-    a.total = 0;
-    a.uncollectedWinnings = 0;
+    Auction memory a = Auction(msg.sender, charities[_charity],
+                        _title, AuctionStatus.Active, 0, charities[_charity], 0,
+                         0, 0);
+
+    auctions.push(a);
 
     emit AuctionCreated(auctionId, a.title, a.auctioneer);
 
