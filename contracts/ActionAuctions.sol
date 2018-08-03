@@ -26,7 +26,7 @@ contract ActionAuctions is Ownable {
   Auction[] public auctions;          // All auctions
 
   //name of charity to eth address
-  mapping(string => address) public charities;
+  mapping(string => address) charities;
 
   address auctioneer;
 
@@ -115,6 +115,11 @@ contract ActionAuctions is Ownable {
   ///Allows Action Auctions to approve a charity
   function addCharity(string _charity, address _address) external onlyOwner{
     charities[_charity] = _address;
+  }
+
+  ///function
+  function getCharity(string _charity) external view returns(address){
+    return charities[_charity];
   }
 
   //Doesn't allow ether randomly being sent to you
